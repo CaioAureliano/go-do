@@ -12,5 +12,5 @@ func TestCreate(t *testing.T) {
 	todoService := New()
 	err := todoService.Create(task)
 
-	assert.NoError(t, err)
+	assert.Error(t, err)
 }
