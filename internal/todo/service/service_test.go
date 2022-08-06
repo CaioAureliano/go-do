@@ -4,18 +4,72 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/CaioAureliano/go-do/internal/todo/dto"
 	"github.com/CaioAureliano/go-do/internal/todo/model"
 	"github.com/CaioAureliano/go-do/internal/todo/repository"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCreate(t *testing.T) {
-	task := "build go-do api"
+	tests := []struct {
+		name string
 
-	todoService := New()
-	err := todoService.Create(task)
+		gotTask        *dto.TaskRequest
+		mockRepository repository.TodoRepository
 
-	assert.NoError(t, err)
+		wantRes     *model.Todo
+		wantErr     assert.ErrorAssertionFunc
+		expectedErr error
+	}{
+		{
+			name: "should be create to-do with valid task",
+
+			gotTask: &dto.TaskRequest{
+				Task: "learn Go",
+			},
+
+			mockRepository: mockRepository{
+				fnCreate: func(todo *model.Todo) (*model.Todo, error) {
+					return todo, nil
+				},
+			},
+
+			wantRes: &model.Todo{
+				Task:   "learn Go",
+				Status: false,
+			},
+			wantErr:     assert.NoError,
+			expectedErr: nil,
+		},
+		{
+			name: "should be not create to-do with invalid task",
+
+			gotTask: &dto.TaskRequest{
+				Task: "go",
+			},
+
+			wantRes:     nil,
+			wantErr:     assert.Error,
+			expectedErr: ErrInvalidTask,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			todoRepository = func() repository.TodoRepository {
+				return tt.mockRepository
+			}
+
+			todoService := New()
+			res, err := todoService.Create(tt.gotTask)
+
+			tt.wantErr(t, err)
+			if err == nil && res != nil {
+				assert.Equal(t, tt.wantRes.Task, res.Task)
+				assert.Equal(t, tt.wantRes.Status, res.Status)
+			}
+		})
+	}
 }
 
 func TestGetById(t *testing.T) {
