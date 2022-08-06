@@ -3,13 +3,15 @@ package service
 import (
 	"errors"
 	"log"
+	"time"
 
+	"github.com/CaioAureliano/go-do/internal/todo/dto"
 	"github.com/CaioAureliano/go-do/internal/todo/model"
 	"github.com/CaioAureliano/go-do/internal/todo/repository"
 )
 
 type TodoService interface {
-	Create(task string) error
+	Create(task *dto.TaskRequest) (*model.Todo, error)
 	GetById(id string) (*model.Todo, error)
 }
 
@@ -24,10 +26,27 @@ var (
 	todoRepository = repository.New
 
 	ErrNotFoundTodo = errors.New("not found to-do")
+	ErrInvalidTask  = errors.New("invalid task")
+	ErrCreateTodo   = errors.New("error to create to-do")
 )
 
-func (t todoService) Create(task string) error {
-	return nil
+func (t todoService) Create(task *dto.TaskRequest) (*model.Todo, error) {
+	if !task.IsValid() {
+		return nil, ErrInvalidTask
+	}
+
+	todo := &model.Todo{
+		Task:      task.Task,
+		Status:    false,
+		CreatedAt: time.Now(),
+	}
+
+	created, err := todoRepository().Create(todo)
+	if err != nil {
+		return nil, ErrCreateTodo
+	}
+
+	return created, nil
 }
 
 func (t todoService) GetById(id string) (*model.Todo, error) {
