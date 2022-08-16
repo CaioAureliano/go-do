@@ -8,6 +8,7 @@ import (
 	"github.com/CaioAureliano/go-do/internal/todo/model"
 	"github.com/CaioAureliano/go-do/internal/todo/repository"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestCreate(t *testing.T) {
@@ -136,4 +137,51 @@ func TestGetById(t *testing.T) {
 			assert.Equal(t, tt.wantResponse, res)
 		})
 	}
+}
+
+func TestFind(t *testing.T) {
+	t.Run("filter request ", func(t *testing.T) {
+
+		var newBool = func(b bool) *bool { return &b }
+
+		tests := []struct {
+			name       string
+			gotFilter  *dto.FilterRequest
+			wantFilter primitive.M
+		}{
+			{
+				name:       "should be mount filter with task",
+				gotFilter:  &dto.FilterRequest{Task: "learn go"},
+				wantFilter: primitive.M{"task": "learn go"},
+			},
+			{
+				name:       "",
+				gotFilter:  &dto.FilterRequest{Status: newBool(true)},
+				wantFilter: primitive.M{"status": newBool(true)},
+			},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				filterSpy := primitive.M{}
+
+				mockRepository := mockRepository{
+					fnFind: func(filter primitive.M) (*dto.FindResponse, error) {
+						filterSpy = filter
+						return nil, nil
+					},
+				}
+
+				todoRepository = func() repository.TodoRepository {
+					return mockRepository
+				}
+
+				todoService := New()
+				_, err := todoService.Find(tt.gotFilter)
+
+				assert.NoError(t, err)
+				assert.Equal(t, tt.wantFilter, filterSpy)
+			})
+		}
+	})
 }

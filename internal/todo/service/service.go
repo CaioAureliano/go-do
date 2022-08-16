@@ -70,9 +70,11 @@ func (t todoService) Find(request *dto.FilterRequest) (*dto.FindResponse, error)
 		filter["task"] = request.Task
 	}
 
-	filter["createdAt"] = bson.M{
-		"$gte": primitive.NewDateTimeFromTime(request.DateStartRange),
-		"$lt":  primitive.NewDateTimeFromTime(request.DateEndRange),
+	if request.DateStartRange != nil && request.DateEndRange != nil {
+		filter["createdAt"] = bson.M{
+			"$gte": primitive.NewDateTimeFromTime(*request.DateStartRange),
+			"$lt":  primitive.NewDateTimeFromTime(*request.DateEndRange),
+		}
 	}
 
 	if request.Status != nil {

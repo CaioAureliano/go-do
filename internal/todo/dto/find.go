@@ -12,10 +12,10 @@ type FindResponse struct {
 }
 
 type FilterRequest struct {
-	Task           string    `json:"task"`
-	Status         *bool     `json:"status"`
-	DateStartRange time.Time `json:"date_start"`
-	DateEndRange   time.Time `json:"date_end"`
+	Task           string     `json:"task"`
+	Status         *bool      `json:"status"`
+	DateStartRange *time.Time `json:"date_start"`
+	DateEndRange   *time.Time `json:"date_end"`
 
 	SortByField string `json:"sort_by"`
 }
