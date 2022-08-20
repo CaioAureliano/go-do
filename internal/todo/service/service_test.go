@@ -211,3 +211,14 @@ func TestUpdateById(t *testing.T) {
 	assert.Equal(t, req.Task, res.Task)
 	assert.NoError(t, err)
 }
+
+func TestUpdateStatusById(t *testing.T) {
+	id := "abc1234"
+	req := true
+
+	todoService := New()
+	res, err := todoService.UpdateStatusById(req, id)
+
+	assert.Equal(t, req, res.Status)
+	assert.NoError(t, err)
+}
