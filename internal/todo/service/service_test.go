@@ -216,8 +216,27 @@ func TestUpdateStatusById(t *testing.T) {
 	id := "abc1234"
 	req := true
 
+	todoMock := &model.Todo{
+		Status: false,
+	}
+
+	wantTodo := &model.Todo{}
+
+	todoRepository = func() repository.TodoRepository {
+		return mockRepository{
+			fnUpdateStatus: func(todo *model.Todo) error {
+				wantTodo = todo
+				return nil
+			},
+			fnGetById: func(id string) (*model.Todo, error) {
+				return todoMock, nil
+			},
+		}
+	}
+
 	todoService := New()
 	err := todoService.UpdateStatusById(req, id)
 
+	assert.Equal(t, req, wantTodo.Status)
 	assert.NoError(t, err)
 }
