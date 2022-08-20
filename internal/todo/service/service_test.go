@@ -185,3 +185,17 @@ func TestFind(t *testing.T) {
 		}
 	})
 }
+
+func TestUpdate(t *testing.T) {
+	id := "12345"
+	req := &model.Todo{
+		Task: "write more tests",
+	}
+
+	todoService := New()
+	res, err := todoService.UpdateById(req, id)
+
+	assert.Equal(t, id, res.ID)
+	assert.Equal(t, req.Task, res.Task)
+	assert.NoError(t, err)
+}
