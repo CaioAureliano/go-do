@@ -104,6 +104,7 @@ func (t todoService) UpdateById(req *dto.TaskRequest, id string) (*model.Todo, e
 	res.Task = req.Task
 	todo, err := todoRepository().Update(res)
 	if err != nil {
+		log.Printf("error to update to-do with id: %s [%s]", id, err.Error())
 		return nil, errors.New("internal error: cannot update to-do")
 	}
 
@@ -119,7 +120,7 @@ func (t todoService) UpdateStatusById(status bool, id string) error {
 	todo.Status = status
 	if err := todoRepository().UpdateStatus(todo); err != nil {
 		log.Printf("error to update status with id: %s [%s]", id, err.Error())
-		return errors.New("erro to update status")
+		return errors.New("error to update status")
 	}
 
 	return nil
