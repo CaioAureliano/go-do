@@ -186,7 +186,7 @@ func TestFind(t *testing.T) {
 	})
 }
 
-func TestUpdate(t *testing.T) {
+func TestUpdateById(t *testing.T) {
 	id := "12345"
 	req := &model.Todo{
 		Task: "write more tests",

@@ -16,6 +16,7 @@ type TodoService interface {
 	Create(task *dto.TaskRequest) (*model.Todo, error)
 	GetById(id string) (*model.Todo, error)
 	Find(req *dto.FilterRequest) (*dto.FindResponse, error)
+	UpdateById(task *dto.TaskRequest, id string) (*model.Todo, error)
 }
 
 type todoService struct {
@@ -87,4 +88,23 @@ func (t todoService) Find(request *dto.FilterRequest) (*dto.FindResponse, error)
 	}
 
 	return res, nil
+}
+
+func (t todoService) UpdateById(req *dto.TaskRequest, id string) (*model.Todo, error) {
+	if !req.IsValid() {
+		return nil, ErrInvalidTask
+	}
+
+	res, err := t.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	res.Task = req.Task
+	todo, err := todoRepository().Update(res)
+	if err != nil {
+		return nil, errors.New("internal error: cannot update to-do")
+	}
+
+	return todo, nil
 }

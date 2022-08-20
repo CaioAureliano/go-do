@@ -10,6 +10,7 @@ type TodoRepository interface {
 	GetById(id string) (*model.Todo, error)
 	Create(todo *model.Todo) (*model.Todo, error)
 	Find(filter primitive.M) (*dto.FindResponse, error)
+	Update(todo *model.Todo) (*model.Todo, error)
 }
 
 type todoRepository struct {
@@ -28,5 +29,9 @@ func (r todoRepository) Create(todo *model.Todo) (*model.Todo, error) {
 }
 
 func (r todoRepository) Find(filter primitive.M) (*dto.FindResponse, error) {
+	return nil, nil
+}
+
+func (r todoRepository) Update(todo *model.Todo) (*model.Todo, error) {
 	return nil, nil
 }
