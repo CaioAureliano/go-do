@@ -17,6 +17,7 @@ type TodoService interface {
 	GetById(id string) (*model.Todo, error)
 	Find(req *dto.FilterRequest) (*dto.FindResponse, error)
 	UpdateById(task *dto.TaskRequest, id string) (*model.Todo, error)
+	UpdateStatusById(status bool, id string) error
 }
 
 type todoService struct {
@@ -107,4 +108,19 @@ func (t todoService) UpdateById(req *dto.TaskRequest, id string) (*model.Todo, e
 	}
 
 	return todo, nil
+}
+
+func (t todoService) UpdateStatusById(status bool, id string) error {
+	todo, err := t.GetById(id)
+	if err != nil {
+		return err
+	}
+
+	todo.Status = status
+	if err := todoRepository().UpdateStatus(todo); err != nil {
+		log.Printf("error to update status with id: %s [%s]", id, err.Error())
+		return errors.New("erro to update status")
+	}
+
+	return nil
 }

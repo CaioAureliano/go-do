@@ -217,8 +217,7 @@ func TestUpdateStatusById(t *testing.T) {
 	req := true
 
 	todoService := New()
-	res, err := todoService.UpdateStatusById(req, id)
+	err := todoService.UpdateStatusById(req, id)
 
-	assert.Equal(t, req, res.Status)
 	assert.NoError(t, err)
 }
