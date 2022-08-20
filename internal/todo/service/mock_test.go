@@ -10,6 +10,7 @@ type mockRepository struct {
 	fnGetById func(id string) (*model.Todo, error)
 	fnCreate  func(todo *model.Todo) (*model.Todo, error)
 	fnFind    func(filter primitive.M) (*dto.FindResponse, error)
+	fnUpdate  func(todo *model.Todo) (*model.Todo, error)
 }
 
 func (m mockRepository) GetById(id string) (*model.Todo, error) {
@@ -31,4 +32,11 @@ func (m mockRepository) Find(filter primitive.M) (*dto.FindResponse, error) {
 		return nil, nil
 	}
 	return m.fnFind(filter)
+}
+
+func (m mockRepository) Update(todo *model.Todo) (*model.Todo, error) {
+	if m.fnUpdate == nil {
+		return nil, nil
+	}
+	return m.fnUpdate(todo)
 }

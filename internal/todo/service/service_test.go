@@ -188,14 +188,26 @@ func TestFind(t *testing.T) {
 
 func TestUpdateById(t *testing.T) {
 	id := "12345"
-	req := &model.Todo{
-		Task: "write more tests",
+	req := &dto.TaskRequest{
+		Task: "learn go",
+	}
+
+	todoRepository = func() repository.TodoRepository {
+		return mockRepository{
+			fnUpdate: func(todo *model.Todo) (*model.Todo, error) {
+				return todo, nil
+			},
+			fnGetById: func(id string) (*model.Todo, error) {
+				return &model.Todo{
+					Task: "another",
+				}, nil
+			},
+		}
 	}
 
 	todoService := New()
 	res, err := todoService.UpdateById(req, id)
 
-	assert.Equal(t, id, res.ID)
 	assert.Equal(t, req.Task, res.Task)
 	assert.NoError(t, err)
 }
