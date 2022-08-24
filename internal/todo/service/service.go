@@ -18,6 +18,7 @@ type TodoService interface {
 	Find(req *dto.FilterRequest) (*dto.FindResponse, error)
 	UpdateById(task *dto.TaskRequest, id string) (*model.Todo, error)
 	UpdateStatusById(status bool, id string) error
+	DeleteById(id string) error
 }
 
 type todoService struct {
@@ -122,6 +123,22 @@ func (t todoService) UpdateStatusById(status bool, id string) error {
 		log.Printf("error to update status with id: %s [%s]", id, err.Error())
 		return errors.New("error to update status")
 	}
+
+	return nil
+}
+
+func (t todoService) DeleteById(id string) error {
+	todo, err := t.GetById(id)
+	if err != nil {
+		return err
+	}
+
+	if err := todoRepository().DeleteById(id); err != nil {
+		log.Printf("error to try delete to-do with id: %s [%s]", id, err.Error())
+		return err
+	}
+
+	log.Printf("to-do deleted with id: %s - todo: %v", id, todo)
 
 	return nil
 }

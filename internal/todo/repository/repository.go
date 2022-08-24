@@ -12,6 +12,7 @@ type TodoRepository interface {
 	Find(filter primitive.M) (*dto.FindResponse, error)
 	Update(todo *model.Todo) (*model.Todo, error)
 	UpdateStatus(todo *model.Todo) error
+	DeleteById(id string) error
 }
 
 type todoRepository struct {
@@ -38,5 +39,9 @@ func (r todoRepository) Update(todo *model.Todo) (*model.Todo, error) {
 }
 
 func (r todoRepository) UpdateStatus(todo *model.Todo) error {
+	return nil
+}
+
+func (r todoRepository) DeleteById(id string) error {
 	return nil
 }
