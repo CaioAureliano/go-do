@@ -220,12 +220,12 @@ func TestUpdateStatusById(t *testing.T) {
 		Status: false,
 	}
 
-	wantTodo := &model.Todo{}
+	spyTodo := &model.Todo{}
 
 	todoRepository = func() repository.TodoRepository {
 		return mockRepository{
 			fnUpdateStatus: func(todo *model.Todo) error {
-				wantTodo = todo
+				spyTodo = todo
 				return nil
 			},
 			fnGetById: func(id string) (*model.Todo, error) {
@@ -237,6 +237,16 @@ func TestUpdateStatusById(t *testing.T) {
 	todoService := New()
 	err := todoService.UpdateStatusById(req, id)
 
-	assert.Equal(t, req, wantTodo.Status)
+	assert.Equal(t, req, spyTodo.Status)
+	assert.NoError(t, err)
+}
+
+func TestDelete(t *testing.T) {
+	id := "abc1234"
+
+	todoService := New()
+	res, err := todoService.DeleteById(id)
+
+	assert.Equal(t, id, res)
 	assert.NoError(t, err)
 }
