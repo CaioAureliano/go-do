@@ -241,12 +241,24 @@ func TestUpdateStatusById(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestDelete(t *testing.T) {
+func TestDeleteById(t *testing.T) {
 	id := "abc1234"
 
-	todoService := New()
-	res, err := todoService.DeleteById(id)
+	todoRepository = func() repository.TodoRepository {
+		return mockRepository{
+			fnGetById: func(id string) (*model.Todo, error) {
+				return &model.Todo{
+					ID: id,
+				}, nil
+			},
+			fnDeleteById: func(id string) error {
+				return nil
+			},
+		}
+	}
 
-	assert.Equal(t, id, res)
+	todoService := New()
+	err := todoService.DeleteById(id)
+
 	assert.NoError(t, err)
 }
