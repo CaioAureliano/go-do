@@ -46,3 +46,15 @@ func TestCreate(t *testing.T) {
 		})
 	}
 }
+
+func TestGetById(t *testing.T) {
+	id := "xyz369"
+
+	req, _ := http.NewRequest("GET", "/"+id, nil)
+	rec := httptest.NewRecorder()
+	h := http.HandlerFunc(GetTodoByIdHandler)
+
+	h.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+}
