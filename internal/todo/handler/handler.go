@@ -32,7 +32,7 @@ func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 
 	todo, err := todoService().Create(req)
 	if err != nil {
-		if errors.Is(err, service.ErrCreateTodo) {
+		if errors.Is(err, service.ErrInvalidTask) {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write(errorJsonResponse(err.Error()))
 			return

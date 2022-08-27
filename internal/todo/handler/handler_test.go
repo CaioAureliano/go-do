@@ -10,13 +10,39 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	body := `{"task": "learn go"}`
+	tests := []struct {
+		name string
 
-	req, _ := http.NewRequest("POST", "/", bytes.NewBuffer([]byte(body)))
-	rec := httptest.NewRecorder()
-	h := http.HandlerFunc(CreateTodoHandler)
+		body       string
+		wantStatus int
+	}{
+		{
+			name: "should be return 201 Created status with valid body",
 
-	h.ServeHTTP(rec, req)
+			body:       `{"task": "learn go"}`,
+			wantStatus: http.StatusCreated,
+		},
+		{
+			name:       "should be return 400 Bad Request status with invalid body",
+			body:       `{"task": ""}`,
+			wantStatus: http.StatusBadRequest,
+		},
+		{
+			name:       "should be return 400 Bad Request status without body",
+			body:       `{}`,
+			wantStatus: http.StatusBadRequest,
+		},
+	}
 
-	assert.Equal(t, http.StatusCreated, rec.Code)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req, _ := http.NewRequest("POST", "/", bytes.NewBuffer([]byte(tt.body)))
+			rec := httptest.NewRecorder()
+			h := http.HandlerFunc(CreateTodoHandler)
+
+			h.ServeHTTP(rec, req)
+
+			assert.Equal(t, tt.wantStatus, rec.Code)
+		})
+	}
 }
