@@ -3,6 +3,7 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -85,6 +86,18 @@ func TestGetById(t *testing.T) {
 			mockService: mockService{
 				fnGetById: func(id string) (*model.Todo, error) {
 					return nil, service.ErrNotFoundTodo
+				},
+			},
+		},
+		{
+			name: "should be return nil response and internal server error status with invalid id",
+
+			wantStatus:   http.StatusInternalServerError,
+			wantResponse: nil,
+
+			mockService: mockService{
+				fnGetById: func(id string) (*model.Todo, error) {
+					return nil, errors.New("generic error")
 				},
 			},
 		},
