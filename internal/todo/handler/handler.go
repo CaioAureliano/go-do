@@ -9,6 +9,7 @@ import (
 
 	"github.com/CaioAureliano/go-do/internal/todo/dto"
 	"github.com/CaioAureliano/go-do/internal/todo/service"
+	"github.com/gorilla/mux"
 )
 
 var (
@@ -19,8 +20,13 @@ var (
 	}
 )
 
+const (
+	httpHeaderContentType          = "Content-Type"
+	httpHeaderContentTypeJsonValue = "application/json"
+)
+
 func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set(httpHeaderContentType, httpHeaderContentTypeJsonValue)
 
 	var req *dto.TaskRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -52,5 +58,27 @@ func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(httpHeaderContentType, httpHeaderContentTypeJsonValue)
 
+	req := mux.Vars(r)
+
+	todo, err := todoService().GetById(req["id"])
+	if err != nil {
+		if errors.Is(err, service.ErrNotFoundTodo) {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(errorJsonResponse(err.Error()))
+			return
+		}
+
+		log.Println(err)
+
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(errorJsonResponse("internal error"))
+		return
+	}
+
+	res, _ := json.Marshal(todo)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(res)
 }
