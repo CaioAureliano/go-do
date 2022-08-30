@@ -79,6 +79,8 @@ func GetTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
 
 	res, _ := json.Marshal(todo)
 
+	log.Printf("found to-do: %s", res)
+
 	w.WriteHeader(http.StatusOK)
 	w.Write(res)
 }
