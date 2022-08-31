@@ -128,3 +128,19 @@ func TestGetById(t *testing.T) {
 		})
 	}
 }
+
+func TestFind(t *testing.T) {
+	req, _ := http.NewRequest("GET", "/", nil)
+	rec := httptest.NewRecorder()
+	h := http.HandlerFunc(FindTodos)
+
+	q := req.URL.Query()
+	q.Add("status", "true")
+	q.Add("task", "go")
+
+	req.URL.RawQuery = q.Encode()
+
+	h.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+}
