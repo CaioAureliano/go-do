@@ -84,3 +84,23 @@ func GetTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(res)
 }
+
+func FindTodos(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(httpHeaderContentType, httpHeaderContentTypeJsonValue)
+
+	filter := new(dto.FilterRequest)
+	filter.Mount(r.URL.Query())
+
+	todos, err := todoService().Find(filter)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(errorJsonResponse(err.Error()))
+		return
+	}
+
+	res, _ := json.Marshal(todos)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(res)
+}
