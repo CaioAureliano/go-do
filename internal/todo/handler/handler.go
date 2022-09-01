@@ -32,7 +32,7 @@ func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write(errorJsonResponse(err.Error()))
+		_, _ = w.Write(errorJsonResponse(err.Error()))
 		return
 	}
 
@@ -40,21 +40,21 @@ func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, service.ErrInvalidTask) {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(errorJsonResponse(err.Error()))
+			_, _ = w.Write(errorJsonResponse(err.Error()))
 			return
 		}
 
 		log.Println(err)
 
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(errorJsonResponse(err.Error()))
+		_, _ = w.Write(errorJsonResponse(err.Error()))
 		return
 	}
 
 	res, _ := json.Marshal(todo)
 
 	w.WriteHeader(http.StatusCreated)
-	w.Write(res)
+	_, _ = w.Write(res)
 }
 
 func GetTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
@@ -66,14 +66,14 @@ func GetTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, service.ErrNotFoundTodo) {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(errorJsonResponse(err.Error()))
+			_, _ = w.Write(errorJsonResponse(err.Error()))
 			return
 		}
 
 		log.Println(err)
 
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(errorJsonResponse("internal error"))
+		_, _ = w.Write(errorJsonResponse("internal error"))
 		return
 	}
 
@@ -82,7 +82,7 @@ func GetTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("found to-do: %s", res)
 
 	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	_, _ = w.Write(res)
 }
 
 func FindTodosHandler(w http.ResponseWriter, r *http.Request) {
@@ -95,14 +95,14 @@ func FindTodosHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(errorJsonResponse(err.Error()))
+		_, _ = w.Write(errorJsonResponse(err.Error()))
 		return
 	}
 
 	res, _ := json.Marshal(todos)
 
 	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	_, _ = w.Write(res)
 }
 
 func UpdateTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
@@ -117,18 +117,18 @@ func UpdateTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, service.ErrInvalidTask) {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(errorJsonResponse(err.Error()))
+			_, _ = w.Write(errorJsonResponse(err.Error()))
 			return
 		}
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(errorJsonResponse(err.Error()))
+		_, _ = w.Write(errorJsonResponse(err.Error()))
 		return
 	}
 
 	res, _ := json.Marshal(todo)
 
 	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	_, _ = w.Write(res)
 }
 
 func UpdateTodoStatusByIdHandler(w http.ResponseWriter, r *http.Request) {
@@ -142,14 +142,14 @@ func UpdateTodoStatusByIdHandler(w http.ResponseWriter, r *http.Request) {
 	if err := todoService().UpdateStatusById(req.Status, v["id"]); err != nil {
 		if errors.Is(err, service.ErrNotFoundTodo) {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(errorJsonResponse(err.Error()))
+			_, _ = w.Write(errorJsonResponse(err.Error()))
 			return
 		}
 
 		log.Println(err)
 
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(errorJsonResponse("internal error"))
+		_, _ = w.Write(errorJsonResponse("internal error"))
 		return
 	}
 
@@ -164,14 +164,14 @@ func DeleteTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
 	if err := todoService().DeleteById(v["id"]); err != nil {
 		if errors.Is(err, service.ErrNotFoundTodo) {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(errorJsonResponse(err.Error()))
+			_, _ = w.Write(errorJsonResponse(err.Error()))
 			return
 		}
 
 		log.Println(err)
 
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("internal error"))
+		_, _ = w.Write([]byte("internal error"))
 		return
 	}
 
