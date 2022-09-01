@@ -175,25 +175,67 @@ func TestUpdateTodoById(t *testing.T) {
 }
 
 func TestUpdateTodoStatusById(t *testing.T) {
-	id := "abc123"
-	body := `{"status": true}`
+	tests := []struct {
+		name string
+
+		body        string
+		mockService service.TodoService
+
+		wantStatus int
+	}{
+		{
+			name: "should be return 204 No Content status with valid ID and body",
+
+			body: `{"status": true}`,
+			mockService: mockService{
+				fnGetById: func(id string) (*model.Todo, error) {
+					return &model.Todo{
+						ID:   id,
+						Task: "mock",
+					}, nil
+				},
+			},
+
+			wantStatus: http.StatusNoContent,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			id := "abc123"
+
+			todoService = func() service.TodoService {
+				return tt.mockService
+			}
+
+			req, _ := http.NewRequest("PUT", fmt.Sprintf("/%s/status", id), bytes.NewBuffer([]byte(tt.body)))
+			rec := httptest.NewRecorder()
+
+			r := mux.NewRouter()
+			r.HandleFunc("/{id}/status", UpdateTodoStatusByIdHandler)
+			r.ServeHTTP(rec, req)
+
+			assert.Equal(t, tt.wantStatus, rec.Code)
+		})
+	}
+}
+
+func TestDeleteTodoById(t *testing.T) {
+	id := "123456"
 
 	todoService = func() service.TodoService {
 		return mockService{
 			fnGetById: func(id string) (*model.Todo, error) {
-				return &model.Todo{
-					ID:   id,
-					Task: "mock",
-				}, nil
+				return &model.Todo{ID: id}, nil
 			},
 		}
 	}
 
-	req, _ := http.NewRequest("PUT", fmt.Sprintf("/%s/status", id), bytes.NewBuffer([]byte(body)))
+	req, _ := http.NewRequest("DELETE", fmt.Sprintf("/%s", id), nil)
 	rec := httptest.NewRecorder()
 
 	r := mux.NewRouter()
-	r.HandleFunc("/{id}/status", UpdateTodoStatusByIdHandler)
+	r.HandleFunc("/{id}", DeleteTodoByIdHandler)
 	r.ServeHTTP(rec, req)
 
 	assert.Equal(t, http.StatusNoContent, rec.Code)

@@ -155,3 +155,7 @@ func UpdateTodoStatusByIdHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func DeleteTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
+
+}
