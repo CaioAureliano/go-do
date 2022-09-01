@@ -173,3 +173,28 @@ func TestUpdateTodoById(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rec.Code)
 }
+
+func TestUpdateTodoStatusById(t *testing.T) {
+	id := "abc123"
+	body := `{"status": true}`
+
+	todoService = func() service.TodoService {
+		return mockService{
+			fnGetById: func(id string) (*model.Todo, error) {
+				return &model.Todo{
+					ID:   id,
+					Task: "mock",
+				}, nil
+			},
+		}
+	}
+
+	req, _ := http.NewRequest("PUT", fmt.Sprintf("/%s/status", id), bytes.NewBuffer([]byte(body)))
+	rec := httptest.NewRecorder()
+
+	r := mux.NewRouter()
+	r.HandleFunc("/{id}/status", UpdateTodoStatusByIdHandler)
+	r.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusNoContent, rec.Code)
+}

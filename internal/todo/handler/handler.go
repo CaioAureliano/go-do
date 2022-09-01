@@ -130,3 +130,28 @@ func UpdateTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(res)
 }
+
+func UpdateTodoStatusByIdHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(httpHeaderContentType, httpHeaderContentTypeJsonValue)
+
+	v := mux.Vars(r)
+
+	var req dto.StatusRequest
+	json.NewDecoder(r.Body).Decode(&req)
+
+	if err := todoService().UpdateStatusById(req.Status, v["id"]); err != nil {
+		if errors.Is(err, service.ErrNotFoundTodo) {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(errorJsonResponse(err.Error()))
+			return
+		}
+
+		log.Println(err)
+
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(errorJsonResponse("internal error"))
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
