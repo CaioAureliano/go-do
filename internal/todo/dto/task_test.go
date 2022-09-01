@@ -24,16 +24,16 @@ func TestIsValid(t *testing.T) {
 			wantValid: true,
 		},
 		{
-			name: "should be true with invalid task greater max range",
+			name: "should be false with invalid task greater max range",
 
 			gotTask: &TaskRequest{
-				Task: "Gooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo lang",
+				Task: "Goooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo lang",
 			},
 
 			wantValid: false,
 		},
 		{
-			name: "should be true with invalid task less min range",
+			name: "should be false with invalid task less min range",
 
 			gotTask: &TaskRequest{
 				Task: "Go",
