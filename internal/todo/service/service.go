@@ -109,6 +109,8 @@ func (t todoService) UpdateById(req *dto.TaskRequest, id string) (*model.Todo, e
 		return nil, errors.New("internal error: cannot update to-do")
 	}
 
+	log.Printf("updated to-do: %v", todo)
+
 	return todo, nil
 }
 

@@ -6,7 +6,8 @@ import (
 )
 
 type mockService struct {
-	fnGetById func(id string) (*model.Todo, error)
+	fnGetById    func(id string) (*model.Todo, error)
+	fnUpdateById func(task *dto.TaskRequest, id string) (*model.Todo, error)
 }
 
 func (m mockService) Create(task *dto.TaskRequest) (*model.Todo, error) {
@@ -25,7 +26,10 @@ func (m mockService) Find(req *dto.FilterRequest) (*dto.FindResponse, error) {
 }
 
 func (m mockService) UpdateById(task *dto.TaskRequest, id string) (*model.Todo, error) {
-	return nil, nil
+	if m.fnUpdateById == nil {
+		return nil, nil
+	}
+	return m.fnUpdateById(task, id)
 }
 
 func (m mockService) UpdateStatusById(status bool, id string) error {

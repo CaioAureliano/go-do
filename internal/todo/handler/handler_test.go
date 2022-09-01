@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/CaioAureliano/go-do/internal/todo/dto"
 	"github.com/CaioAureliano/go-do/internal/todo/model"
 	"github.com/CaioAureliano/go-do/internal/todo/service"
 	"github.com/gorilla/mux"
@@ -132,15 +134,42 @@ func TestGetById(t *testing.T) {
 func TestFind(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	rec := httptest.NewRecorder()
-	h := http.HandlerFunc(FindTodos)
+	h := http.HandlerFunc(FindTodosHandler)
 
 	q := req.URL.Query()
 	q.Add("status", "true")
 	q.Add("task", "go")
+	q.Add("date_start", "01/01/2022")
+	q.Add("date_end", "30/12/2022")
 
 	req.URL.RawQuery = q.Encode()
 
 	h.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+}
+
+func TestUpdateTodoById(t *testing.T) {
+	id := "12345"
+	body := `{"task": "cook"}`
+
+	todoService = func() service.TodoService {
+		return mockService{
+			fnUpdateById: func(request *dto.TaskRequest, id string) (*model.Todo, error) {
+				return &model.Todo{
+					ID:   id,
+					Task: request.Task,
+				}, nil
+			},
+		}
+	}
+
+	req, _ := http.NewRequest("PUT", fmt.Sprintf("/%s", id), bytes.NewBuffer([]byte(body)))
+	rec := httptest.NewRecorder()
+
+	r := mux.NewRouter()
+	r.HandleFunc("/{id}", UpdateTodoByIdHandler)
+	r.ServeHTTP(rec, req)
 
 	assert.Equal(t, http.StatusOK, rec.Code)
 }

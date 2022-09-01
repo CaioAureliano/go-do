@@ -85,7 +85,7 @@ func GetTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-func FindTodos(w http.ResponseWriter, r *http.Request) {
+func FindTodosHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(httpHeaderContentType, httpHeaderContentTypeJsonValue)
 
 	filter := new(dto.FilterRequest)
@@ -100,6 +100,32 @@ func FindTodos(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, _ := json.Marshal(todos)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(res)
+}
+
+func UpdateTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(httpHeaderContentType, httpHeaderContentTypeJsonValue)
+
+	v := mux.Vars(r)
+
+	var task *dto.TaskRequest
+	json.NewDecoder(r.Body).Decode(&task)
+
+	todo, err := todoService().UpdateById(task, v["id"])
+	if err != nil {
+		if errors.Is(err, service.ErrInvalidTask) {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(errorJsonResponse(err.Error()))
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(errorJsonResponse(err.Error()))
+		return
+	}
+
+	res, _ := json.Marshal(todo)
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(res)
