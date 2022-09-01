@@ -157,5 +157,23 @@ func UpdateTodoStatusByIdHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(httpHeaderContentType, httpHeaderContentTypeJsonValue)
 
+	v := mux.Vars(r)
+
+	if err := todoService().DeleteById(v["id"]); err != nil {
+		if errors.Is(err, service.ErrNotFoundTodo) {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(errorJsonResponse(err.Error()))
+			return
+		}
+
+		log.Println(err)
+
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("internal error"))
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
