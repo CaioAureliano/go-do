@@ -14,6 +14,7 @@ import (
 	"github.com/CaioAureliano/go-do/internal/todo/service"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestCreate(t *testing.T) {
@@ -55,6 +56,9 @@ func TestCreate(t *testing.T) {
 }
 
 func TestGetById(t *testing.T) {
+	id := "abc1234"
+	oid, _ := primitive.ObjectIDFromHex(id)
+
 	tests := []struct {
 		name string
 
@@ -68,13 +72,13 @@ func TestGetById(t *testing.T) {
 
 			wantStatus: http.StatusOK,
 			wantResponse: &model.Todo{
-				ID: "abc1234",
+				ID: oid,
 			},
 
 			mockService: mockService{
 				fnGetById: func(id string) (*model.Todo, error) {
 					return &model.Todo{
-						ID: id,
+						ID: oid,
 					}, nil
 				},
 			},
@@ -107,8 +111,6 @@ func TestGetById(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			id := "abc1234"
-
 			todoService = func() service.TodoService {
 				return tt.mockService
 			}
@@ -157,7 +159,6 @@ func TestUpdateTodoById(t *testing.T) {
 		return mockService{
 			fnUpdateById: func(request *dto.TaskRequest, id string) (*model.Todo, error) {
 				return &model.Todo{
-					ID:   id,
 					Task: request.Task,
 				}, nil
 			},
@@ -190,7 +191,6 @@ func TestUpdateTodoStatusById(t *testing.T) {
 			mockService: mockService{
 				fnGetById: func(id string) (*model.Todo, error) {
 					return &model.Todo{
-						ID:   id,
 						Task: "mock",
 					}, nil
 				},
@@ -226,7 +226,7 @@ func TestDeleteTodoById(t *testing.T) {
 	todoService = func() service.TodoService {
 		return mockService{
 			fnGetById: func(id string) (*model.Todo, error) {
-				return &model.Todo{ID: id}, nil
+				return &model.Todo{}, nil
 			},
 		}
 	}
