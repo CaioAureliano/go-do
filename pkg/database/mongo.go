@@ -13,8 +13,9 @@ var (
 )
 
 type MongoConnection struct {
+	Ctx context.Context
+
 	client *mongo.Client
-	ctx    context.Context
 }
 
 func New() *MongoConnection {
@@ -24,7 +25,7 @@ func New() *MongoConnection {
 	}
 
 	return &MongoConnection{
-		ctx:    context.TODO(),
+		Ctx:    context.TODO(),
 		client: client,
 	}
 }
@@ -35,7 +36,7 @@ func (m *MongoConnection) Connection(collection string) *mongo.Collection {
 
 func (m *MongoConnection) Disconnect() {
 	if m.client != nil {
-		if err := m.client.Disconnect(m.ctx); err != nil {
+		if err := m.client.Disconnect(m.Ctx); err != nil {
 			panic(err)
 		}
 	}
