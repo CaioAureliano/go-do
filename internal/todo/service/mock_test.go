@@ -7,15 +7,15 @@ import (
 )
 
 type mockRepository struct {
-	fnGetById      func(id string) (*model.Todo, error)
+	fnGetById      func(id primitive.ObjectID) (*model.Todo, error)
 	fnCreate       func(todo *model.Todo) (*model.Todo, error)
 	fnFind         func(filter primitive.M) (*dto.FindResponse, error)
 	fnUpdate       func(todo *model.Todo) (*model.Todo, error)
 	fnUpdateStatus func(todo *model.Todo) error
-	fnDeleteById   func(id string) error
+	fnDeleteById   func(id primitive.ObjectID) error
 }
 
-func (m mockRepository) GetById(id string) (*model.Todo, error) {
+func (m mockRepository) GetById(id primitive.ObjectID) (*model.Todo, error) {
 	if m.fnGetById == nil {
 		return nil, nil
 	}
@@ -43,14 +43,7 @@ func (m mockRepository) Update(todo *model.Todo) (*model.Todo, error) {
 	return m.fnUpdate(todo)
 }
 
-func (m mockRepository) UpdateStatus(todo *model.Todo) error {
-	if m.fnUpdateStatus == nil {
-		return nil
-	}
-	return m.fnUpdateStatus(todo)
-}
-
-func (m mockRepository) DeleteById(id string) error {
+func (m mockRepository) DeleteById(id primitive.ObjectID) error {
 	if m.fnDeleteById(id) == nil {
 		return nil
 	}
