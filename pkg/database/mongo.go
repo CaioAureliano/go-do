@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -9,7 +10,7 @@ import (
 
 var (
 	DB_NAME     = "go-do"
-	MONGODB_URI = "mongodb://localhost:27017"
+	MONGODB_URI = os.Getenv("MONGO_URI")
 )
 
 type MongoConnection struct {

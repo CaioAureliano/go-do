@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  go-do:
+    build: .
+    environment:
+      - PORT=8080
+      - MONGO_URI=mongodb://mongo:27017
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:5.0
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo:/data/db
+
+volumes:
+  mongo:
