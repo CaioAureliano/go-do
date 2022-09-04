@@ -125,7 +125,7 @@ func TestGetById(t *testing.T) {
 			assert.Equal(t, tt.wantStatus, rec.Code)
 			if tt.wantResponse != nil {
 				var res *model.Todo
-				json.NewDecoder(rec.Body).Decode(&res)
+				_ = json.NewDecoder(rec.Body).Decode(&res)
 
 				assert.Equal(t, tt.wantResponse, res)
 			}

@@ -111,7 +111,7 @@ func UpdateTodoByIdHandler(w http.ResponseWriter, r *http.Request) {
 	v := mux.Vars(r)
 
 	var task *dto.TaskRequest
-	json.NewDecoder(r.Body).Decode(&task)
+	_ = json.NewDecoder(r.Body).Decode(&task)
 
 	todo, err := todoService().UpdateById(task, v["id"])
 	if err != nil {
@@ -137,7 +137,7 @@ func UpdateTodoStatusByIdHandler(w http.ResponseWriter, r *http.Request) {
 	v := mux.Vars(r)
 
 	var req dto.StatusRequest
-	json.NewDecoder(r.Body).Decode(&req)
+	_ = json.NewDecoder(r.Body).Decode(&req)
 
 	if err := todoService().UpdateStatusById(req.Status, v["id"]); err != nil {
 		if errors.Is(err, service.ErrNotFoundTodo) {
