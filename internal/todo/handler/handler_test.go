@@ -44,6 +44,17 @@ func TestCreate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			todoService = func() service.TodoService {
+				return mockService{
+					fnCreate: func(task *dto.TaskRequest) (*model.Todo, error) {
+						if !task.IsValid() {
+							return nil, service.ErrInvalidTask
+						}
+						return &model.Todo{}, nil
+					},
+				}
+			}
+
 			req, _ := http.NewRequest("POST", "/", bytes.NewBuffer([]byte(tt.body)))
 			rec := httptest.NewRecorder()
 			h := http.HandlerFunc(CreateTodoHandler)
