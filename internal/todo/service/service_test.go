@@ -74,10 +74,12 @@ func TestCreate(t *testing.T) {
 }
 
 func TestGetById(t *testing.T) {
+	id := "abc1234"
+	oid, _ := primitive.ObjectIDFromHex(id)
+
 	tests := []struct {
 		name string
 
-		gotId          string
 		mockRepository repository.TodoRepository
 
 		wantError    assert.ErrorAssertionFunc
@@ -87,11 +89,10 @@ func TestGetById(t *testing.T) {
 		{
 			name: "should be return a to-do",
 
-			gotId: "xyz1234",
 			mockRepository: mockRepository{
-				fnGetById: func(id string) (*model.Todo, error) {
+				fnGetById: func(id primitive.ObjectID) (*model.Todo, error) {
 					return &model.Todo{
-						ID:     "xyz1234",
+						ID:     id,
 						Task:   "tests to go-do",
 						Status: false,
 					}, nil
@@ -101,7 +102,7 @@ func TestGetById(t *testing.T) {
 			wantError:   assert.NoError,
 			expectedErr: nil,
 			wantResponse: &model.Todo{
-				ID:     "xyz1234",
+				ID:     oid,
 				Task:   "tests to go-do",
 				Status: false,
 			},
@@ -109,9 +110,8 @@ func TestGetById(t *testing.T) {
 		{
 			name: "should be return a error and nil response",
 
-			gotId: "abc123",
 			mockRepository: mockRepository{
-				fnGetById: func(id string) (*model.Todo, error) {
+				fnGetById: func(id primitive.ObjectID) (*model.Todo, error) {
 					return nil, errors.New("repository error")
 				},
 			},
@@ -130,7 +130,7 @@ func TestGetById(t *testing.T) {
 			}
 
 			todoService := New()
-			res, err := todoService.GetById(tt.gotId)
+			res, err := todoService.GetById(id)
 
 			tt.wantError(t, err)
 			assert.Equal(t, tt.expectedErr, err)
@@ -197,7 +197,7 @@ func TestUpdateById(t *testing.T) {
 			fnUpdate: func(todo *model.Todo) (*model.Todo, error) {
 				return todo, nil
 			},
-			fnGetById: func(id string) (*model.Todo, error) {
+			fnGetById: func(id primitive.ObjectID) (*model.Todo, error) {
 				return &model.Todo{
 					Task: "another",
 				}, nil
@@ -224,11 +224,11 @@ func TestUpdateStatusById(t *testing.T) {
 
 	todoRepository = func() repository.TodoRepository {
 		return mockRepository{
-			fnUpdateStatus: func(todo *model.Todo) error {
+			fnUpdate: func(todo *model.Todo) (*model.Todo, error) {
 				spyTodo = todo
-				return nil
+				return todo, nil
 			},
-			fnGetById: func(id string) (*model.Todo, error) {
+			fnGetById: func(id primitive.ObjectID) (*model.Todo, error) {
 				return todoMock, nil
 			},
 		}
@@ -246,12 +246,12 @@ func TestDeleteById(t *testing.T) {
 
 	todoRepository = func() repository.TodoRepository {
 		return mockRepository{
-			fnGetById: func(id string) (*model.Todo, error) {
+			fnGetById: func(id primitive.ObjectID) (*model.Todo, error) {
 				return &model.Todo{
 					ID: id,
 				}, nil
 			},
-			fnDeleteById: func(id string) error {
+			fnDeleteById: func(id primitive.ObjectID) error {
 				return nil
 			},
 		}

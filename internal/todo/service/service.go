@@ -57,7 +57,9 @@ func (t todoService) Create(task *dto.TaskRequest) (*model.Todo, error) {
 }
 
 func (t todoService) GetById(id string) (*model.Todo, error) {
-	todo, err := todoRepository().GetById(id)
+	oid, _ := primitive.ObjectIDFromHex(id)
+
+	todo, err := todoRepository().GetById(oid)
 	if err != nil {
 		log.Printf("not found to-do with ID: %s [%s]", id, err.Error())
 		return nil, ErrNotFoundTodo
@@ -121,7 +123,7 @@ func (t todoService) UpdateStatusById(status bool, id string) error {
 	}
 
 	todo.Status = status
-	if err := todoRepository().UpdateStatus(todo); err != nil {
+	if _, err := todoRepository().Update(todo); err != nil {
 		log.Printf("error to update status with id: %s [%s]", id, err.Error())
 		return errors.New("error to update status")
 	}
@@ -135,7 +137,8 @@ func (t todoService) DeleteById(id string) error {
 		return err
 	}
 
-	if err := todoRepository().DeleteById(id); err != nil {
+	oid, _ := primitive.ObjectIDFromHex(id)
+	if err := todoRepository().DeleteById(oid); err != nil {
 		log.Printf("error to try delete to-do with id: %s [%s]", id, err.Error())
 		return err
 	}

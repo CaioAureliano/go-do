@@ -8,10 +8,14 @@ import (
 type mockService struct {
 	fnGetById    func(id string) (*model.Todo, error)
 	fnUpdateById func(task *dto.TaskRequest, id string) (*model.Todo, error)
+	fnCreate     func(task *dto.TaskRequest) (*model.Todo, error)
 }
 
 func (m mockService) Create(task *dto.TaskRequest) (*model.Todo, error) {
-	return nil, nil
+	if m.fnCreate == nil {
+		return nil, nil
+	}
+	return m.fnCreate(task)
 }
 
 func (m mockService) GetById(id string) (*model.Todo, error) {

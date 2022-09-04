@@ -9,7 +9,7 @@ import (
 
 type FindResponse struct {
 	Todos []*model.Todo `json:"todos"`
-	Count int64         `json:"count"`
+	Count int           `json:"count"`
 }
 
 type FilterRequest struct {
