@@ -25,6 +25,11 @@ const (
 	httpHeaderContentTypeJsonValue = "application/json"
 )
 
+// swagger:route POST / create to-do
+// Create new to-do
+// responses:
+// 201: Created
+// 400: Bad request
 func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(httpHeaderContentType, httpHeaderContentTypeJsonValue)
 

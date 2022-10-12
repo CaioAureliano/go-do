@@ -1,0 +1,14 @@
+paths:
+    /:
+        post:
+            description: Create new to-do
+            operationId: to-do
+            responses:
+                "201":
+                    $ref: '#/responses/Created'
+                "400":
+                    $ref: '#/responses/Bad'
+                    description: request
+            tags:
+                - create
+swagger: "2.0"
